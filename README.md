@@ -3,10 +3,11 @@
 interact with the stardust api over http using your favorite language - javascript! (typescript too!)
 
 ```bash
+npm i stardust.gg
 yarn add stardust.gg
 ```
 
-# Create a game
+## Create a game
 
 ```ts
 // game.ts
