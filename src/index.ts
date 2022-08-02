@@ -3,7 +3,7 @@ import { Token } from './token'
 import { Player } from './player'
 import type { Fee } from './type'
 import * as health from './health'
-import * as common from './common'
+import * as request from './request'
 
 export type GameInstance = {
   ownerId: string;
@@ -32,6 +32,6 @@ export class Game {
     this.health = health
   }
   async get() {
-    return common.core<Game>(this.apikey, 'get', 'game/get')
+    return request.core<Game>(this.apikey, 'get', 'game/get')
   }
 }

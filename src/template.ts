@@ -1,6 +1,6 @@
-import { ethers } from 'ethers'
+import * as ethers from 'ethers'
 
-import * as common from './common'
+import * as request from './request'
 import type { Fee, AnyRecord } from './type'
 
 export const defaultCap = ethers.BigNumber.from(2).pow(95)
@@ -38,15 +38,15 @@ export type AllTemplatesFilter = {
 export class Template {
   constructor(protected apikey: string) {}
   async create(body: CreateTemplate) {
-    return common.core<TemplateInstance>(this.apikey, 'post', 'template/create', body)
+    return request.core<TemplateInstance>(this.apikey, 'post', 'template/create', body)
   }
   async get(templateId: number) {
-    return common.core<TemplateInstance>(this.apikey, 'get', 'template/get', {
+    return request.core<TemplateInstance>(this.apikey, 'get', 'template/get', {
       templateId,
     })
   }
   async getAll(start = 0, limit = 10_000, filter = '') {
-    return common.core<Template[]>(this.apikey, 'get', 'template/get-all', {
+    return request.core<Template[]>(this.apikey, 'get', 'template/get-all', {
       start,
       limit,
       ...(filter ? {
@@ -55,23 +55,23 @@ export class Template {
     })
   }
   async count(filter = '') {
-    return common.core<Template[]>(this.apikey, 'get', 'template/count', filter ? {
+    return request.core<Template[]>(this.apikey, 'get', 'template/count', filter ? {
       filter,
     } : {})
   }
   async update(templateId: number, props: AnyRecord) {
-    return common.core<TemplateInstance>(this.apikey, 'put', 'template/mutate', {
+    return request.core<TemplateInstance>(this.apikey, 'put', 'template/mutate', {
       templateId,
       props,
     })
   }
   async remove(templateId: number) {
-    return common.core<object>(this.apikey, 'delete', 'template/remove', {
+    return request.core<object>(this.apikey, 'delete', 'template/remove', {
       templateId,
     })
   }
   async propsRemove(templateId: number, props: string[]) {
-    return common.core<object>(this.apikey, 'delete', 'template/props-remove', {
+    return request.core<object>(this.apikey, 'delete', 'template/props-remove', {
       templateId,
       props,
     })

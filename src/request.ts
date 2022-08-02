@@ -3,22 +3,24 @@ import * as axios from 'axios'
 
 export type Method = 'get' | 'post' | 'delete' | 'put'
 
+export const applicationJson = 'application/json'
+export const contentType = 'content-type'
+export const accept = 'accept'
+
+export const getHeaders = {
+  [accept]: applicationJson,
+}
+
+export const postHeaders = {
+  [accept]: applicationJson,
+  [contentType]: applicationJson,
+}
+
 export const methodBasedDefaultHeaders: Record<Method, Record<string, string>> = {
-  get: {
-    Accept: 'application/json',
-  },
-  post: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
-  delete: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
-  put: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
+  get: getHeaders,
+  post: postHeaders,
+  delete: postHeaders,
+  put: postHeaders,
 }
 
 export const request = <T>(

@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import * as ethers from 'ethers'
 
-import * as common from './common'
+import * as request from './request'
 import type { AnyRecord, Count } from './type'
 
 export type PlayerIdResponse = {
@@ -66,50 +66,50 @@ export type UpdatePlayerRequest = {
 export class Player {
   constructor(protected apikey: string) {}
   async get(playerId: string) {
-    return common.core<PlayerInstance>(this.apikey, 'get', 'player/get', {
+    return request.core<PlayerInstance>(this.apikey, 'get', 'player/get', {
       playerId,
     })
   }
   async getPlayerId(uniqueId: string) {
-    return common.core<PlayerIdResponse>(this.apikey, 'get', 'player/get-id', {
+    return request.core<PlayerIdResponse>(this.apikey, 'get', 'player/get-id', {
       uniqueId,
     })
   }
   async getIds() {
-    return common.core<PlayerIdsResponse[]>(this.apikey, 'get', 'player/get-ids')
+    return request.core<PlayerIdsResponse[]>(this.apikey, 'get', 'player/get-ids')
   }
   async getAll(start = 0, limit = 10_000) {
-    return common.core<PlayerIdsResponse[]>(this.apikey, 'get', 'player/get-all', {
+    return request.core<PlayerIdsResponse[]>(this.apikey, 'get', 'player/get-all', {
       start,
       limit,
     })
   }
   async getInventory(playerId: string) {
-    return common.core<Inventory[]>(this.apikey, 'get', 'player/get-inventory', {
+    return request.core<Inventory[]>(this.apikey, 'get', 'player/get-inventory', {
       playerId,
     })
   }
   async getPlayerCount() {
-    return common.core<Count>(this.apikey, 'get', 'player/count')
+    return request.core<Count>(this.apikey, 'get', 'player/count')
   }
   async getWallet(playerId: string) {
-    return common.core<Wallet>(this.apikey, 'get', 'player/wallet', {
+    return request.core<Wallet>(this.apikey, 'get', 'player/wallet', {
       playerId,
     })
   }
   async create(props: CreatePlayerRequest) {
-    return common.core<CreatePlayerResponse>(this.apikey, 'post', 'player/create', props)
+    return request.core<CreatePlayerResponse>(this.apikey, 'post', 'player/create', props)
   }
   async update(props: UpdatePlayerRequest) {
-    return common.core<object>(this.apikey, 'put', 'player/mutate', props)
+    return request.core<object>(this.apikey, 'put', 'player/mutate', props)
   }
   async remove(playerId: string) {
-    return common.core<object>(this.apikey, 'delete', 'player/remove', {
+    return request.core<object>(this.apikey, 'delete', 'player/remove', {
       playerId,
     })
   }
   async propsRemove(playerId: string, props: string[]) {
-    return common.core<object>(this.apikey, 'delete', 'player/props-remove', {
+    return request.core<object>(this.apikey, 'delete', 'player/props-remove', {
       playerId,
       props,
     })
@@ -119,7 +119,7 @@ export class Player {
     address: string,
     tokens: TokenAmount | TokenAmount[],
   ) {
-    return common.core<Withdrawal[]>(this.apikey, 'post', 'player/withdraw', {
+    return request.core<Withdrawal[]>(this.apikey, 'post', 'player/withdraw', {
       playerId,
       address: ethers.utils.getAddress(address),
       tokenObjects: _.isArray(tokens) ? tokens : [tokens],
