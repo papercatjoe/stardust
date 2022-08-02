@@ -45,7 +45,7 @@ export class Template {
       templateId,
     })
   }
-  async getAll(start = 0, limit = 10_000, filter = '') {
+  async getAll(start = 0, limit = 100, filter = '') {
     return request.core<Template[]>(this.apikey, 'get', 'template/get-all', {
       start,
       limit,

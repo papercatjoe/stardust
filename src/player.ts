@@ -78,7 +78,7 @@ export class Player {
   async getIds() {
     return request.core<PlayerIdsResponse[]>(this.apikey, 'get', 'player/get-ids')
   }
-  async getAll(start = 0, limit = 10_000) {
+  async getAll(start = 0, limit = 100) {
     return request.core<PlayerIdsResponse[]>(this.apikey, 'get', 'player/get-all', {
       start,
       limit,
@@ -89,16 +89,20 @@ export class Player {
       playerId,
     })
   }
-  async getPlayerCount() {
+  async count() {
     return request.core<Count>(this.apikey, 'get', 'player/count')
   }
   async getWallet(playerId: string) {
-    return request.core<Wallet>(this.apikey, 'get', 'player/wallet', {
+    return request.core<Wallet>(this.apikey, 'get', 'player/wallet-get', {
       playerId,
     })
   }
-  async create(props: CreatePlayerRequest) {
-    return request.core<CreatePlayerResponse>(this.apikey, 'post', 'player/create', props)
+  async create(uniqueId: string, userData = {}, image?: string) {
+    return request.core<CreatePlayerResponse>(this.apikey, 'post', 'player/create', {
+      uniqueId,
+      userData,
+      image,
+    })
   }
   async update(props: UpdatePlayerRequest) {
     return request.core<object>(this.apikey, 'put', 'player/mutate', props)

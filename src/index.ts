@@ -1,24 +1,9 @@
 import { Template } from './template'
 import { Token } from './token'
 import { Player } from './player'
-import type { Fee } from './type'
-import * as health from './health'
+import type { GameInstance } from './type'
 import * as request from './request'
-
-export type GameInstance = {
-  ownerId: string;
-  name: string;
-  desc: string;
-  image: string;
-  blockchain: number;
-  escrow: string;
-  royalty: number;
-  stardustFee: number;
-  news: null;
-  id: number;
-  fees: Fee[];
-  bucketName: string;
-}
+import * as health from './health'
 
 export class Game {
   template: Template
@@ -32,6 +17,6 @@ export class Game {
     this.health = health
   }
   async get() {
-    return request.core<Game>(this.apikey, 'get', 'game/get')
+    return request.core<GameInstance>(this.apikey, 'get', 'game/get')
   }
 }

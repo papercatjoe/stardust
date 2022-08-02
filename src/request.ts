@@ -1,4 +1,4 @@
-import urlJoin from 'url-join'
+import * as urlJoin from 'url-join'
 import * as axios from 'axios'
 
 export type Method = 'get' | 'post' | 'delete' | 'put'
@@ -16,6 +16,13 @@ export const postHeaders = {
   [contentType]: applicationJson,
 }
 
+export const shouldUseParams: Record<Method, boolean> = {
+  get: true,
+  post: false,
+  put: false,
+  delete: true,
+}
+
 export const methodBasedDefaultHeaders: Record<Method, Record<string, string>> = {
   get: getHeaders,
   post: postHeaders,
@@ -31,14 +38,17 @@ export const request = <T>(
   options: Partial<axios.AxiosRequestConfig>,
 ) => {
   const methodDefaultHeaders = methodBasedDefaultHeaders[method]
+  const useParams = shouldUseParams[method]
   return axios.default.request<T>({
     ...options,
     headers: {
-      'x-api-key': apikey as string,
+      ...(apikey ? {
+        'x-api-key': apikey as string,
+      } : {}),
       ...methodDefaultHeaders,
       ...(options?.headers || {}),
     },
-    data: body,
+    ...(useParams ? { params: body } : { data: body }),
     method: method.toUpperCase(),
     url,
   })
@@ -54,7 +64,7 @@ export const core = async <T>(
   request<T>(
     apikey,
     method,
-    urlJoin('https://core-api.stardust.gg/v1/', uri),
+    urlJoin.default('https://core-api.stardust.gg/v1/', uri),
     body,
     options,
   )
@@ -70,7 +80,7 @@ export const marketplace = async <T>(
   request<T>(
     apikey,
     method,
-    urlJoin('https://marketplace-api.stardust.gg/v1/', uri),
+    urlJoin.default('https://marketplace-api.stardust.gg/v1/', uri),
     body,
     options,
   )
