@@ -8,6 +8,7 @@
     "lint": "eslint src .eslintrc.cjs --fix",
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
+    "prepublish": "npm run build",
     "test": "c8 ava"
   },
   "files": [
