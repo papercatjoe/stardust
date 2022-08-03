@@ -3,6 +3,7 @@ import _ from 'lodash'
 import type { AnyRecord } from './type'
 import * as utils from './utils'
 import * as request from './request'
+import { Template } from './template'
 
 export type TokenProps = {
   inherited: AnyRecord;
@@ -20,7 +21,7 @@ export type TokenInstance = {
 export type CreateToken = {
   templateId: number;
   amount: string;
-  props: AnyRecord;
+  props?: TokenProps;
 }
 
 export type TokenIdentifier = {
@@ -29,29 +30,51 @@ export type TokenIdentifier = {
 }
 
 export class Token {
-  constructor(protected apikey: string) {}
+  template: Template
+  constructor(protected apikey: string) {
+    this.template = new Template(apikey)
+  }
   async get(tokenIds: number[]) {
     return request.core<TokenInstance[]>(this.apikey, 'get', 'token/get', {
       tokenIds,
     })
   }
+  async checkNoFungibleProps(tokenObjects: CreateToken[]) {
+    const uniqueTemplateIds = _(tokenObjects).map('templateId').uniq().value()
+    const templates = await Promise.all(uniqueTemplateIds.map((templateId) => (
+      this.template.get(templateId)
+        .then(({ data }) => data)
+    )))
+    const templateById = _.keyBy(templates, 'id')
+    await Promise.all(tokenObjects.map(token => {
+      if (templateById[token.templateId].type === 'FT') {
+        if (Object.keys(token.props || {}).length) {
+          throw new Error('unable to set props on a mint for a fungible token')
+        }
+      }
+    }))
+  }
   async mint(playerId: string, tokens: CreateToken | CreateToken[]) {
+    const tokenObjects = utils.toArray(tokens)
+    await this.checkNoFungibleProps(tokenObjects)
     return request.core<number[]>(this.apikey, 'post', 'token/mint-bulk', {
       playerId,
-      tokenObjects: utils.toArray(tokens),
+      tokenObjects,
     })
   }
-  async transfer(fromPlayer: string, toPlayer: string, tokens: TokenIdentifier | TokenIdentifier[]) {
+  async transfer(fromPlayerId: string, toPlayerId: string, tokens: TokenIdentifier | TokenIdentifier[]) {
+    const tokenObjects = utils.toArray(tokens)
     return request.core<object>(this.apikey, 'post', 'token/transfer', {
-      fromPlayer,
-      toPlayer,
-      tokenObjects: utils.toArray(tokens),
+      fromPlayerId,
+      toPlayerId,
+      tokenObjects,
     })
   }
   async burn(playerId: string, tokens: TokenIdentifier | TokenIdentifier[]) {
+    const tokenObjects = utils.toArray(tokens)
     return request.core<object>(this.apikey, 'post', 'token/burn', {
       playerId,
-      tokenObjects: utils.toArray(tokens),
+      tokenObjects,
     })
   }
   async update(tokenId: number, props = {} as AnyRecord) {

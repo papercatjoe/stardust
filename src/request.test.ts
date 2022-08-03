@@ -6,7 +6,7 @@ import * as request from './request'
 const test = anyTest as TestFn<{}>
 
 test('can hit marketplace', async (t) => {
-  const gameId = 984
+  const gameId = 1
   const {
     data,
   } = await request.marketplace<GameInstance>(config.apikey, 'get', 'game/get', {

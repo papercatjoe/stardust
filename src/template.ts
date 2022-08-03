@@ -26,8 +26,8 @@ export type TemplateInstance = {
 export type CreateTemplate = {
   name: string;
   cap: string;
-  type: TemplateType;
-  props: {
+  type?: TemplateType;
+  props?: {
     mutable?: AnyRecord;
     immutable?: AnyRecord;
   };
@@ -44,7 +44,11 @@ export class Template {
     return `https://sd-game-assets.s3.amazonaws.com/game_${gameId}/templates/${templateId}`
   }
   async create(body: CreateTemplate) {
-    return request.core<TemplateInstance>(this.apikey, 'post', 'template/create', body)
+    return request.core<TemplateInstance>(this.apikey, 'post', 'template/create', {
+      type: 'FT',
+      props: {},
+      ...body,
+    })
   }
   async get(templateId: number) {
     return request.core<TemplateInstance>(this.apikey, 'get', 'template/get', {

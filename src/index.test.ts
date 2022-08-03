@@ -20,8 +20,11 @@ test('reates a game object', (t) => {
 })
 
 test('the server status can be retrieved', async (t) => {
-  const { data } = await t.context.noopGame.health.check()
-  t.is(data.status, 'OK')
+  const result = await t.context.game.health.check()
+    .catch((err) => err.response.data)
+  t.deepEqual(result.data || result, {
+    status: 'OK',
+  })
 })
 
 test('the game instance can be retrieved', async (t) => {

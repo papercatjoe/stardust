@@ -4,6 +4,7 @@ import { Game } from './'
 import * as config from './config'
 import _ from 'lodash'
 import * as utils from './utils'
+import * as testUtils from './tst-utils'
 
 const test = anyTest as TestFn<{
   noopGame: Game;
@@ -18,18 +19,13 @@ test.before((t) => {
 })
 
 test.after.always(async (t) => {
-  const { data } = await t.context.game.template.getAll()
-  await Promise.all(data.map(({ id }) => (
-    t.context.game.template.remove(id)
-  )))
+  await testUtils.deleteAll.templates(t.context.game)
 })
 
 test('can create teamplate', async (t) => {
   const { data: template } = await t.context.game.template.create({
     name: 'a',
     cap: '1000',
-    type: 'FT',
-    props: {},
   })
   t.assert(_.isNumber(template.id))
 })
@@ -39,12 +35,11 @@ test('can get template', async (t) => {
   const { data: { id } } = await t.context.game.template.create({
     name,
     cap: '1000',
-    type: 'FT',
-    props: {},
   })
   const { data: template } = await t.context.game.template.get(id)
+  const { gameId } = template
   t.deepEqual(template, {
-    gameId: config.gameId,
+    gameId,
     cap: '1000',
     name,
     type: 'FT',
@@ -59,7 +54,7 @@ test('can get template', async (t) => {
     totalSupply: '0',
     royalty: 0,
     fees: [ { feePercentage: 0, feeType: 'game_royalty' } ],
-    image: t.context.game.template.image(config.gameId, template.id),
+    image: t.context.game.template.image(gameId, template.id),
   })
 })
 
@@ -70,14 +65,10 @@ test('can get all templates', async (t) => {
   const { data: { id: id1 } } = await t.context.game.template.create({
     name: name1,
     cap: '1000',
-    type: 'FT',
-    props: {},
   })
   const { data: { id: id2 } } = await t.context.game.template.create({
     name: name2,
     cap: '1000',
-    type: 'FT',
-    props: {},
   })
   const { data: templates } = await t.context.game.template.getAll()
   t.assert(!_.isUndefined(_.find(templates, { name: name1 })))
@@ -88,15 +79,13 @@ test.serial('can get counts of templates', async (t) => {
   t.timeout(10_000)
   const name1 = uuid.v4()
   const { data: countBefore } = await t.context.game.template.count()
-  t.is(countBefore.count, 0)
+  t.is(countBefore.count - testUtils.ignorableTemplates.size, 0)
   const { data: { id: id1 } } = await t.context.game.template.create({
     name: name1,
     cap: '1000',
-    type: 'FT',
-    props: {},
   })
   const { data: countAfter } = await t.context.game.template.count()
-  t.is(countAfter.count, 1)
+  t.is(countAfter.count - testUtils.ignorableTemplates.size, 1)
 })
 
 test('can update templates', async (t) => {
@@ -150,21 +139,18 @@ test('can get with a filter', async (t) => {
   t.timeout(10_000)
   const name1 = 'n123'
   const name2 = 'n456'
-  const { data: { id: id1 } } = await t.context.game.template.create({
+  await t.context.game.template.create({
     name: name1,
     cap: '1000',
-    type: 'FT',
-    props: {},
   })
   const { data: { id: id2 } } = await t.context.game.template.create({
     name: name2,
     cap: '1000',
-    type: 'FT',
-    props: {},
   })
   const { data } = await t.context.game.template.getAll(0, 100, 'n4')
+  const { gameId } = data[0]
   t.deepEqual(data, [{
-    gameId: config.gameId,
+    gameId,
     cap: '1000',
     name: name2,
     type: 'FT',
@@ -178,7 +164,7 @@ test('can get with a filter', async (t) => {
     id: id2,
     totalSupply: '0',
     royalty: 0,
-    image: t.context.game.template.image(config.gameId, id2),
+    image: t.context.game.template.image(gameId, id2),
   }])
 })
 
@@ -189,14 +175,10 @@ test.serial('can count with a filter', async (t) => {
   await t.context.game.template.create({
     name: name1,
     cap: '1000',
-    type: 'FT',
-    props: {},
   })
   await t.context.game.template.create({
     name: name2,
     cap: '1000',
-    type: 'FT',
-    props: {},
   })
   await utils.timeout(1_000)
   const { data } = await t.context.game.template.count(name2)

@@ -5,6 +5,7 @@ import * as uuid from 'uuid'
 import { Game } from '.'
 import * as config from './config'
 import { baselineBalances, uniquePlayerId } from './utils'
+import * as testUtils from './tst-utils'
 
 const test = anyTest as TestFn<{
   noopGame: Game;
@@ -19,10 +20,7 @@ test.before((t) => {
 })
 
 test.after.always(async (t) => {
-  const { data } = await t.context.game.player.getAll()
-  await Promise.all(data.map(({ playerId }) => (
-    t.context.game.player.remove(playerId)
-  )))
+  await testUtils.deleteAll.players(t.context.game)
 })
 
 test('can create a player', async (t) => {
@@ -77,11 +75,12 @@ test('can remove a player', async (t) => {
   const {
     data
   } = await t.context.game.player.create(uniqueId)
+  const { data: player } = await t.context.game.player.get(data.playerId)
   await t.context.game.player.remove(data.playerId)
   const result = await t.context.game.player.get(data.playerId)
     .catch((err) => err)
   t.deepEqual(result.response.data, {
-    message: `Unable to find player by playerId:${data.playerId} in game:${config.gameId}`,
+    message: `Unable to find player by playerId:${data.playerId} in game:${player.gameId}`,
     statusCode: 500,
   })
 })
@@ -138,9 +137,7 @@ test.serial('can count the number of players', async (t) => {
     console.log((await t.context.game.player.getAll()).data)
   }
   t.is(countBefore.count, 0)
-  const {
-    data: data1,
-  } = await t.context.game.player.create(uniquePlayerId())
+  await t.context.game.player.create(uniquePlayerId())
   const { data: countAfter } = await t.context.game.player.count()
   t.is(countAfter.count, 1)
 })
