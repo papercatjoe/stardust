@@ -1,6 +1,10 @@
+import * as uuid from 'uuid'
+
 export const timeout = (ms = 0) => (
   new Promise((resolve) => { setTimeout(resolve, ms) })
 )
+
+export const placeholderImage = 'https://sd-game-assets.s3.amazonaws.com/placeholder-image.png'
 
 export const baselineBalances = () => ([
   {
@@ -34,3 +38,5 @@ export const baselineBalances = () => ([
     },
   },
 ])
+
+export const uniquePlayerId = () => `uniqemail+${uuid.v4()}@gmail.com`

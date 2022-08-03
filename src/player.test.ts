@@ -4,78 +4,113 @@ import _ from 'lodash'
 import * as uuid from 'uuid'
 import { Game } from '.'
 import * as config from './config'
-import { timeout, baselineBalances } from './utils'
+import { baselineBalances, uniquePlayerId } from './utils'
 
 const test = anyTest as TestFn<{
   noopGame: Game;
   game: Game;
-  playerIds: string[],
 }>
 
 test.before((t) => {
   t.context = {
     noopGame: new Game(''),
     game: new Game(config.apikey),
-    playerIds: [],
   }
 })
 
-test.afterEach(async (t) => {
-  const { playerIds } = t.context
-  await Promise.all(playerIds.map((playerId) => (
+test.after.always(async (t) => {
+  const { data } = await t.context.game.player.getAll()
+  await Promise.all(data.map(({ playerId }) => (
     t.context.game.player.remove(playerId)
   )))
 })
 
-const uniquePlayerId = () => `uniqemail+${uuid.v4()}@gmail.com`
-
 test('can create a player', async (t) => {
   const {
-    data
-  } = await t.context.game.player.create(uniquePlayerId(), {
-    env: 'test',
-  })
-  t.context.playerIds.push(data.playerId)
+    data,
+  } = await t.context.game.player.create(uniquePlayerId())
   t.assert(_.isObject(data))
   t.assert(uuid.validate(data.playerId))
   t.assert(_.isNumber(data.id))
   t.assert(_.isString(data.image))
 })
 
-test('can get a player by it\'s id', async (t) => {
+test('can get a player by its id', async (t) => {
   const {
     data
-  } = await t.context.game.player.create(uniquePlayerId(), {
-    env: 'test',
-  })
-  t.context.playerIds.push(data.playerId)
+  } = await t.context.game.player.create(uniquePlayerId())
   const {
     data: player,
   } = await t.context.game.player.get(data.playerId)
   t.is(player.playerId, data.playerId)
 })
 
-test('can get a player by it\'s originating id', async (t) => {
+test('can get a player by its originating id', async (t) => {
   const uniqueId = uniquePlayerId()
   const {
     data
   } = await t.context.game.player.create(uniqueId)
-  t.context.playerIds.push(data.playerId)
   const {
     data: player,
   } = await t.context.game.player.getPlayerId(uniqueId)
   t.is(player.playerId, data.playerId)
 })
 
-test.serial('can get all id pairs', async (t) => {
+test('can update a player', async (t) => {
+  const {
+    data
+  } = await t.context.game.player.create(uniquePlayerId())
+  await t.context.game.player.update(data.playerId, {
+    env: 'test',
+  })
+  const {
+    data: player,
+  } = await t.context.game.player.get(data.playerId)
+  t.is(player.playerId, data.playerId)
+  t.deepEqual(player.userData, {
+    env: 'test',
+  })
+})
+
+test('can remove a player', async (t) => {
+  const uniqueId = uniquePlayerId()
+  const {
+    data
+  } = await t.context.game.player.create(uniqueId)
+  await t.context.game.player.remove(data.playerId)
+  const result = await t.context.game.player.get(data.playerId)
+    .catch((err) => err)
+  t.deepEqual(result.response.data, {
+    message: `Unable to find player by playerId:${data.playerId} in game:${config.gameId}`,
+    statusCode: 500,
+  })
+})
+
+test('can remove a player\'s props', async (t) => {
+  const uniqueId = uniquePlayerId()
+  const {
+    data
+  } = await t.context.game.player.create(uniqueId, {
+    env: 'test',
+    a: 1,
+    b: 2,
+    c: 3,
+  })
+  await t.context.game.player.removeProps(data.playerId, ['env', 'a'])
+  const { data: player } = await t.context.game.player.get(data.playerId)
+  t.deepEqual(player.userData, {
+    b: 2,
+    c: 3,
+  })
+})
+
+test('can get all id pairs', async (t) => {
   const {
     data: data1,
   } = await t.context.game.player.create(uniquePlayerId())
-  t.context.playerIds.push(data1.playerId)
   const {
     data: data2,
   } = await t.context.game.player.create(uniquePlayerId())
-  t.context.playerIds.push(data2.playerId)
   const {
     data: playerIds,
   } = await t.context.game.player.getIds()
@@ -83,15 +118,13 @@ test.serial('can get all id pairs', async (t) => {
   t.assert(!_.isUndefined(_.find(playerIds, { playerId: data2.playerId })))
 })
 
-test.serial('can get all players', async (t) => {
+test('can get all players', async (t) => {
   const {
     data: data1,
   } = await t.context.game.player.create(uniquePlayerId())
-  t.context.playerIds.push(data1.playerId)
   const {
     data: data2,
   } = await t.context.game.player.create(uniquePlayerId())
-  t.context.playerIds.push(data2.playerId)
   const {
     data: players,
   } = await t.context.game.player.getAll()
@@ -101,21 +134,21 @@ test.serial('can get all players', async (t) => {
 
 test.serial('can count the number of players', async (t) => {
   const { data: countBefore } = await t.context.game.player.count()
+  if (countBefore.count) {
+    console.log((await t.context.game.player.getAll()).data)
+  }
   t.is(countBefore.count, 0)
   const {
     data: data1,
   } = await t.context.game.player.create(uniquePlayerId())
-  t.context.playerIds.push(data1.playerId)
   const { data: countAfter } = await t.context.game.player.count()
   t.is(countAfter.count, 1)
 })
 
-test.serial('can get wallet', async (t) => {
+test('can get wallet', async (t) => {
   const {
     data: data1,
   } = await t.context.game.player.create(uniquePlayerId())
-  t.context.playerIds.push(data1.playerId)
-  await timeout(2_000)
   const { data } = await t.context.game.player.getWallet(data1.playerId)
   const { wallet: [wallet] } = data
   t.is(wallet.blockchain, 'immutablex')

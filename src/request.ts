@@ -1,5 +1,7 @@
 import * as urlJoin from 'url-join'
+import * as querystring from 'querystring'
 import * as axios from 'axios'
+import _ from 'lodash'
 
 export type Method = 'get' | 'post' | 'delete' | 'put'
 
@@ -26,8 +28,16 @@ export const shouldUseParams: Record<Method, boolean> = {
 export const methodBasedDefaultHeaders: Record<Method, Record<string, string>> = {
   get: getHeaders,
   post: postHeaders,
-  delete: postHeaders,
+  delete: getHeaders,
   put: postHeaders,
+}
+
+export const paramsSerializer = (params: Record<string, any>) => {
+  return _(params).keys().map((key) => (
+    [key, _.isObject(params[key])
+      ? encodeURIComponent(JSON.stringify(params[key]))
+      : params[key]].join('=')
+  )).value().join('&')
 }
 
 export const request = <T>(
@@ -48,7 +58,7 @@ export const request = <T>(
       ...methodDefaultHeaders,
       ...(options?.headers || {}),
     },
-    ...(useParams ? { params: body } : { data: body }),
+    ...(useParams ? { params: body, paramsSerializer } : { data: body }),
     method: method.toUpperCase(),
     url,
   })

@@ -72,7 +72,7 @@ export class Player {
   }
   async getPlayerId(uniqueId: string) {
     return request.core<PlayerIdResponse>(this.apikey, 'get', 'player/get-id', {
-      uniqueId,
+      uniqueId: encodeURIComponent(uniqueId),
     })
   }
   async getIds() {
@@ -104,15 +104,18 @@ export class Player {
       image,
     })
   }
-  async update(props: UpdatePlayerRequest) {
-    return request.core<object>(this.apikey, 'put', 'player/mutate', props)
+  async update(playerId: string, props: AnyRecord) {
+    return request.core<object>(this.apikey, 'put', 'player/mutate', {
+      playerId,
+      props,
+    })
   }
   async remove(playerId: string) {
     return request.core<object>(this.apikey, 'delete', 'player/remove', {
       playerId,
     })
   }
-  async propsRemove(playerId: string, props: string[]) {
+  async removeProps(playerId: string, props: string[]) {
     return request.core<object>(this.apikey, 'delete', 'player/props-remove', {
       playerId,
       props,

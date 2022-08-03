@@ -1,7 +1,7 @@
 import * as ethers from 'ethers'
 
 import * as request from './request'
-import type { Fee, AnyRecord } from './type'
+import type { Count, Fee, AnyRecord } from './type'
 
 export const defaultCap = ethers.BigNumber.from(2).pow(95)
 
@@ -27,7 +27,10 @@ export type CreateTemplate = {
   name: string;
   cap: string;
   type: TemplateType;
-  props: AnyRecord;
+  props: {
+    mutable?: AnyRecord;
+    immutable?: AnyRecord;
+  };
 }
 
 export type AllTemplatesFilter = {
@@ -37,6 +40,9 @@ export type AllTemplatesFilter = {
 
 export class Template {
   constructor(protected apikey: string) {}
+  image(gameId: number, templateId: number) {
+    return `https://sd-game-assets.s3.amazonaws.com/game_${gameId}/templates/${templateId}`
+  }
   async create(body: CreateTemplate) {
     return request.core<TemplateInstance>(this.apikey, 'post', 'template/create', body)
   }
@@ -46,7 +52,7 @@ export class Template {
     })
   }
   async getAll(start = 0, limit = 100, filter = '') {
-    return request.core<Template[]>(this.apikey, 'get', 'template/get-all', {
+    return request.core<TemplateInstance[]>(this.apikey, 'get', 'template/get-all', {
       start,
       limit,
       ...(filter ? {
@@ -55,7 +61,7 @@ export class Template {
     })
   }
   async count(filter = '') {
-    return request.core<Template[]>(this.apikey, 'get', 'template/count', filter ? {
+    return request.core<Count>(this.apikey, 'get', 'template/count', filter ? {
       filter,
     } : {})
   }
@@ -70,7 +76,7 @@ export class Template {
       templateId,
     })
   }
-  async propsRemove(templateId: number, props: string[]) {
+  async removeProps(templateId: number, props: string[]) {
     return request.core<object>(this.apikey, 'delete', 'template/props-remove', {
       templateId,
       props,

@@ -59,7 +59,7 @@ export class Token {
       props,
     })
   }
-  async propsRemove(tokenId: number, props: string[]) {
+  async removeProps(tokenId: number, props: string[]) {
     return request.core<object>(this.apikey, 'delete', 'token/props-remove', {
       tokenId,
       props,
