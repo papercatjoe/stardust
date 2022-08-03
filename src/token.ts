@@ -1,6 +1,7 @@
 import _ from 'lodash'
 
 import type { AnyRecord } from './type'
+import * as utils from './utils'
 import * as request from './request'
 
 export type TokenProps = {
@@ -37,20 +38,20 @@ export class Token {
   async mint(playerId: string, tokens: CreateToken | CreateToken[]) {
     return request.core<number[]>(this.apikey, 'post', 'token/mint-bulk', {
       playerId,
-      tokenObjects: _.isArray(tokens) ? tokens : [tokens],
+      tokenObjects: utils.toArray(tokens),
     })
   }
   async transfer(fromPlayer: string, toPlayer: string, tokens: TokenIdentifier | TokenIdentifier[]) {
     return request.core<object>(this.apikey, 'post', 'token/transfer', {
       fromPlayer,
       toPlayer,
-      tokenObjects: _.isArray(tokens) ? tokens : [tokens],
+      tokenObjects: utils.toArray(tokens),
     })
   }
   async burn(playerId: string, tokens: TokenIdentifier | TokenIdentifier[]) {
     return request.core<object>(this.apikey, 'post', 'token/burn', {
       playerId,
-      tokenObjects: _.isArray(tokens) ? tokens : [tokens],
+      tokenObjects: utils.toArray(tokens),
     })
   }
   async update(tokenId: number, props = {} as AnyRecord) {

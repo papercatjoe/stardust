@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import * as uuid from 'uuid'
 
 export const timeout = (ms = 0) => (
@@ -40,3 +41,5 @@ export const baselineBalances = () => ([
 ])
 
 export const uniquePlayerId = () => `uniqemail+${uuid.v4()}@gmail.com`
+
+export const toArray = <T>(list: T | T[]) => _.isArray(list) ? list : [list]

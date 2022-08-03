@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import * as ethers from 'ethers'
 
+import * as utils from './utils'
 import * as request from './request'
 import type { AnyRecord, Count } from './type'
 
@@ -129,7 +130,7 @@ export class Player {
     return request.core<Withdrawal[]>(this.apikey, 'post', 'player/withdraw', {
       playerId,
       address: ethers.utils.getAddress(address),
-      tokenObjects: _.isArray(tokens) ? tokens : [tokens],
+      tokenObjects: utils.toArray(tokens),
     })
   }
 }
