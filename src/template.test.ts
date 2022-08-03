@@ -199,7 +199,6 @@ test.serial('can count with a filter', async (t) => {
     props: {},
   })
   await utils.timeout(1_000)
-  const { data } = await t.context.game.template.count('njk')
-  console.log(data)
+  const { data } = await t.context.game.template.count(name2)
   t.deepEqual(data.count, 1)
 })
