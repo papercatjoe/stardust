@@ -1,4 +1,5 @@
 import anyTest, { TestFn } from 'ava'
+import * as ethers from 'ethers'
 import * as uuid from 'uuid'
 import _ from 'lodash'
 import { AxiosError, AxiosResponse } from 'axios'
@@ -36,17 +37,26 @@ test('efficient coverage', async (t) => {
     name,
     cap: '100000',
   })
+  let caught = false
+  try {
+    await t.context.game.token.mint(player1.playerId, {
+      templateId: template.id,
+      amount: '1000',
+      props: {
+        immutable: {},
+        inherited: {},
+        mutable: {
+          a: 1,
+        },
+      },
+    })
+  } catch (err) {
+    caught = true
+  }
+  t.assert(caught)
   const { data: tokens1 } = await t.context.game.token.mint(player1.playerId, {
     templateId: template.id,
     amount: '1000',
-    // props: {
-    //   mutable: {
-    //     a: 1,
-    //     b: 2,
-    //     c: 3,
-    //     d: 4,
-    //   },
-    // },
   })
   t.is(tokens1.length, 1)
   tokens1.map((token) => t.assert(_.isNumber(token)))
@@ -60,12 +70,7 @@ test('efficient coverage', async (t) => {
         image: placeholderImage,
       },
       immutable: {},
-      mutable: {
-        // a: 1,
-        // b: 2,
-        // c: 3,
-        // d: 4,
-      },
+      mutable: {},
     },
   }])
   await t.context.game.token.update(tokens[0].id, {
@@ -84,9 +89,7 @@ test('efficient coverage', async (t) => {
       immutable: {},
       mutable: {
         a: 3,
-        // b: 2,
         c: 4,
-        // d: 4,
       },
     },
   }])
@@ -103,7 +106,6 @@ test('efficient coverage', async (t) => {
       immutable: {},
       mutable: {
         a: 3,
-        // d: 4,
       },
     },
   }])
@@ -125,4 +127,27 @@ test('efficient coverage', async (t) => {
     message: response?.data?.message,
     statusCode: 400,
   })
+})
+
+test('can withdraw', async (t) => {
+  t.timeout(20_000)
+  const { data: player1 } = await t.context.game.player.create(uniquePlayerId())
+  const name = uuid.v4()
+  const { data: template } = await t.context.game.template.create({
+    name,
+    cap: '100000',
+  })
+  const amount = '1000'
+  const { data: tokens1 } = await t.context.game.token.mint(player1.playerId, {
+    templateId: template.id,
+    amount,
+  })
+  const randomWallet = ethers.Wallet.createRandom()
+  const publicAddress = await randomWallet.getAddress()
+  await Promise.all(tokens1.map(async (token) => {
+    await t.context.game.player.withdraw(player1.playerId, publicAddress, {
+      tokenId: token,
+      amount,
+    })
+  }))
 })

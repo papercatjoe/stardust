@@ -43,19 +43,19 @@ export class Template {
   image(gameId: number, templateId: number) {
     return `https://sd-game-assets.s3.amazonaws.com/game_${gameId}/templates/${templateId}`
   }
-  async create(body: CreateTemplate) {
+  create(body: CreateTemplate) {
     return request.core<TemplateInstance>(this.apikey, 'post', 'template/create', {
       type: 'FT',
       props: {},
       ...body,
     })
   }
-  async get(templateId: number) {
+  get(templateId: number) {
     return request.core<TemplateInstance>(this.apikey, 'get', 'template/get', {
       templateId,
     })
   }
-  async getAll(start = 0, limit = 100, filter = '') {
+  getAll(start = 0, limit = 100, filter = '') {
     return request.core<TemplateInstance[]>(this.apikey, 'get', 'template/get-all', {
       start,
       limit,
@@ -64,23 +64,23 @@ export class Template {
       } : {}),
     })
   }
-  async count(filter = '') {
+  count(filter = '') {
     return request.core<Count>(this.apikey, 'get', 'template/count', filter ? {
       filter,
     } : {})
   }
-  async update(templateId: number, props: AnyRecord) {
+  update(templateId: number, props: AnyRecord) {
     return request.core<TemplateInstance>(this.apikey, 'put', 'template/mutate', {
       templateId,
       props,
     })
   }
-  async remove(templateId: number) {
+  remove(templateId: number) {
     return request.core<Record<string, unknown>>(this.apikey, 'delete', 'template/remove', {
       templateId,
     })
   }
-  async removeProps(templateId: number, props: string[]) {
+  removeProps(templateId: number, props: string[]) {
     return request.core<Record<string, unknown>>(this.apikey, 'delete', 'template/props-remove', {
       templateId,
       props,

@@ -29,7 +29,7 @@ test.after.always(async (t) => {
 test('can create a player', async (t) => {
   const {
     data,
-  } = await t.context.game.player.create(uniquePlayerId())
+  } = await t.context.game.player.create(uniquePlayerId(), {}, 'abc')
   t.assert(_.isObject(data))
   t.assert(uuid.validate(data.playerId))
   t.assert(_.isNumber(data.id))

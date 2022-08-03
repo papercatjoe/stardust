@@ -16,7 +16,7 @@ export class Game {
     this.token = new Token(apikey)
     this.health = health
   }
-  async get() {
+  get() {
     return request.core<GameInstance>(this.apikey, 'get', 'game/get')
   }
 }

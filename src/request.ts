@@ -62,7 +62,7 @@ export const request = <T>(
   })
 }
 
-export const core = async <T>(
+export const core = <T>(
   apikey: string | undefined,
   method: Method,
   uri: string,
@@ -78,7 +78,7 @@ export const core = async <T>(
   )
 )
 
-export const marketplace = async <T>(
+export const marketplace = <T>(
   apikey: string | undefined,
   method: Method,
   uri: string,

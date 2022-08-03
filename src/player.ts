@@ -66,66 +66,66 @@ export type UpdatePlayerRequest = {
 
 export class Player {
   constructor(protected apikey: string) {}
-  async get(playerId: string) {
+  get(playerId: string) {
     return request.core<PlayerInstance>(this.apikey, 'get', 'player/get', {
       playerId,
     })
   }
-  async getPlayerId(uniqueId: string) {
+  getPlayerId(uniqueId: string) {
     return request.core<PlayerIdResponse>(this.apikey, 'get', 'player/get-id', {
       uniqueId: encodeURIComponent(uniqueId),
     })
   }
-  async getIds() {
+  getIds() {
     return request.core<PlayerIdsResponse[]>(this.apikey, 'get', 'player/get-ids')
   }
-  async getAll(start = 0, limit = 100) {
+  getAll(start = 0, limit = 100) {
     return request.core<PlayerIdsResponse[]>(this.apikey, 'get', 'player/get-all', {
       start,
       limit,
     })
   }
-  async getInventory(playerId: string) {
+  getInventory(playerId: string) {
     return request.core<Inventory[]>(this.apikey, 'get', 'player/get-inventory', {
       playerId,
     })
   }
-  async count() {
+  count() {
     return request.core<Count>(this.apikey, 'get', 'player/count')
   }
-  async getWallet(playerId: string) {
+  getWallet(playerId: string) {
     return request.core<Wallet>(this.apikey, 'get', 'player/wallet-get', {
       playerId,
     })
   }
-  async create(uniqueId: string, userData = {}, image = '') {
-    return request.core<CreatePlayerResponse>(this.apikey, 'post', 'player/create', image ? {
+  create(uniqueId: string, userData = {}, image = '') {
+    const props: CreatePlayerRequest = {
       uniqueId,
       userData,
-      image,
-    } : {
-      uniqueId,
-      userData,
-    })
+    }
+    if (image) {
+      props.image = image
+    }
+    return request.core<CreatePlayerResponse>(this.apikey, 'post', 'player/create', props)
   }
-  async update(playerId: string, props: AnyRecord) {
+  update(playerId: string, props: AnyRecord) {
     return request.core<Record<string, unknown>>(this.apikey, 'put', 'player/mutate', {
       playerId,
       props,
     })
   }
-  async remove(playerId: string) {
+  remove(playerId: string) {
     return request.core<Record<string, unknown>>(this.apikey, 'delete', 'player/remove', {
       playerId,
     })
   }
-  async removeProps(playerId: string, props: string[]) {
+  removeProps(playerId: string, props: string[]) {
     return request.core<Record<string, unknown>>(this.apikey, 'delete', 'player/props-remove', {
       playerId,
       props,
     })
   }
-  async withdraw(
+  withdraw(
     playerId: string,
     address: string,
     tokens: TokenAmount | TokenAmount[],

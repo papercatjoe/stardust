@@ -34,7 +34,7 @@ export class Token {
   constructor(protected apikey: string) {
     this.template = new Template(apikey)
   }
-  async get(tokenIds: number[]) {
+  get(tokenIds: number[]) {
     return request.core<TokenInstance[]>(this.apikey, 'get', 'token/get', {
       tokenIds,
     })
@@ -62,7 +62,7 @@ export class Token {
       tokenObjects,
     })
   }
-  async transfer(fromPlayerId: string, toPlayerId: string, tokens: TokenIdentifier | TokenIdentifier[]) {
+  transfer(fromPlayerId: string, toPlayerId: string, tokens: TokenIdentifier | TokenIdentifier[]) {
     const tokenObjects = utils.toArray(tokens)
     return request.core<Record<string, unknown>>(this.apikey, 'post', 'token/transfer', {
       fromPlayerId,
@@ -70,20 +70,20 @@ export class Token {
       tokenObjects,
     })
   }
-  async burn(playerId: string, tokens: TokenIdentifier | TokenIdentifier[]) {
+  burn(playerId: string, tokens: TokenIdentifier | TokenIdentifier[]) {
     const tokenObjects = utils.toArray(tokens)
     return request.core<Record<string, unknown>>(this.apikey, 'post', 'token/burn', {
       playerId,
       tokenObjects,
     })
   }
-  async update(tokenId: number, props = {} as AnyRecord) {
+  update(tokenId: number, props = {} as AnyRecord) {
     return request.core<Record<string, unknown>>(this.apikey, 'put', 'token/mutate', {
       tokenId,
       props,
     })
   }
-  async removeProps(tokenId: number, props: string[]) {
+  removeProps(tokenId: number, props: string[]) {
     return request.core<Record<string, unknown>>(this.apikey, 'delete', 'token/props-remove', {
       tokenId,
       props,

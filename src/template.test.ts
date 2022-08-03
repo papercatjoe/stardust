@@ -24,7 +24,7 @@ test.after.always(async (t) => {
   await testUtils.deleteAll.templates(t.context.game)
 })
 
-test('can create teamplate', async (t) => {
+test('can create template', async (t) => {
   const { data: template } = await t.context.game.template.create({
     name: 'a',
     cap: '1000',
@@ -41,6 +41,7 @@ test('can get template', async (t) => {
   const { data: template } = await t.context.game.template.get(id)
   const { gameId } = template
   t.deepEqual(template, {
+    activeListing: false,
     gameId,
     cap: '1000',
     name,
@@ -152,6 +153,7 @@ test('can get with a filter', async (t) => {
   const { data } = await t.context.game.template.getAll(0, 100, 'n4')
   const { gameId } = data[0]
   t.deepEqual(data, [{
+    activeListing: false,
     gameId,
     cap: '1000',
     name: name2,
