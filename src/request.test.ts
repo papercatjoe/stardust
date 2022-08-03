@@ -1,9 +1,10 @@
 import anyTest, { TestFn } from 'ava'
+
 import { GameInstance } from './type'
 import * as config from './config'
 import * as request from './request'
 
-const test = anyTest as TestFn<{}>
+const test = anyTest as TestFn<Record<string, unknown>>
 
 test('can hit marketplace', async (t) => {
   const gameId = 1

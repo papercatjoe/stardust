@@ -2,10 +2,13 @@ import anyTest, { TestFn } from 'ava'
 import * as ethers from 'ethers'
 import _ from 'lodash'
 import * as uuid from 'uuid'
-import { Game } from '.'
+import { AxiosError } from 'axios'
+
 import * as config from './config'
 import { baselineBalances, uniquePlayerId } from './utils'
 import * as testUtils from './tst-utils'
+
+import { Game } from '.'
 
 const test = anyTest as TestFn<{
   noopGame: Game;
@@ -35,7 +38,7 @@ test('can create a player', async (t) => {
 
 test('can get a player by its id', async (t) => {
   const {
-    data
+    data,
   } = await t.context.game.player.create(uniquePlayerId())
   const {
     data: player,
@@ -46,7 +49,7 @@ test('can get a player by its id', async (t) => {
 test('can get a player by its originating id', async (t) => {
   const uniqueId = uniquePlayerId()
   const {
-    data
+    data,
   } = await t.context.game.player.create(uniqueId)
   const {
     data: player,
@@ -56,7 +59,7 @@ test('can get a player by its originating id', async (t) => {
 
 test('can update a player', async (t) => {
   const {
-    data
+    data,
   } = await t.context.game.player.create(uniquePlayerId())
   await t.context.game.player.update(data.playerId, {
     env: 'test',
@@ -73,13 +76,13 @@ test('can update a player', async (t) => {
 test('can remove a player', async (t) => {
   const uniqueId = uniquePlayerId()
   const {
-    data
+    data,
   } = await t.context.game.player.create(uniqueId)
   const { data: player } = await t.context.game.player.get(data.playerId)
   await t.context.game.player.remove(data.playerId)
-  const result = await t.context.game.player.get(data.playerId)
-    .catch((err) => err)
-  t.deepEqual(result.response.data, {
+  const response = await t.context.game.player.get(data.playerId)
+    .catch((err: AxiosError<string>) => err.response)
+  t.deepEqual(response?.data, {
     message: `Unable to find player by playerId:${data.playerId} in game:${player.gameId}`,
     statusCode: 500,
   })
@@ -88,7 +91,7 @@ test('can remove a player', async (t) => {
 test('can remove a player\'s props', async (t) => {
   const uniqueId = uniquePlayerId()
   const {
-    data
+    data,
   } = await t.context.game.player.create(uniqueId, {
     env: 'test',
     a: 1,

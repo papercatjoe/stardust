@@ -46,13 +46,13 @@ export class Token {
         .then(({ data }) => data)
     )))
     const templateById = _.keyBy(templates, 'id')
-    await Promise.all(tokenObjects.map(token => {
+    tokenObjects.forEach((token) => {
       if (templateById[token.templateId].type === 'FT') {
         if (Object.keys(token.props || {}).length) {
           throw new Error('unable to set props on a mint for a fungible token')
         }
       }
-    }))
+    })
   }
   async mint(playerId: string, tokens: CreateToken | CreateToken[]) {
     const tokenObjects = utils.toArray(tokens)
@@ -64,7 +64,7 @@ export class Token {
   }
   async transfer(fromPlayerId: string, toPlayerId: string, tokens: TokenIdentifier | TokenIdentifier[]) {
     const tokenObjects = utils.toArray(tokens)
-    return request.core<object>(this.apikey, 'post', 'token/transfer', {
+    return request.core<Record<string, unknown>>(this.apikey, 'post', 'token/transfer', {
       fromPlayerId,
       toPlayerId,
       tokenObjects,
@@ -72,19 +72,19 @@ export class Token {
   }
   async burn(playerId: string, tokens: TokenIdentifier | TokenIdentifier[]) {
     const tokenObjects = utils.toArray(tokens)
-    return request.core<object>(this.apikey, 'post', 'token/burn', {
+    return request.core<Record<string, unknown>>(this.apikey, 'post', 'token/burn', {
       playerId,
       tokenObjects,
     })
   }
   async update(tokenId: number, props = {} as AnyRecord) {
-    return request.core<object>(this.apikey, 'put', 'token/mutate', {
+    return request.core<Record<string, unknown>>(this.apikey, 'put', 'token/mutate', {
       tokenId,
       props,
     })
   }
   async removeProps(tokenId: number, props: string[]) {
-    return request.core<object>(this.apikey, 'delete', 'token/props-remove', {
+    return request.core<Record<string, unknown>>(this.apikey, 'delete', 'token/props-remove', {
       tokenId,
       props,
     })

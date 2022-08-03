@@ -76,12 +76,12 @@ export class Template {
     })
   }
   async remove(templateId: number) {
-    return request.core<object>(this.apikey, 'delete', 'template/remove', {
+    return request.core<Record<string, unknown>>(this.apikey, 'delete', 'template/remove', {
       templateId,
     })
   }
   async removeProps(templateId: number, props: string[]) {
-    return request.core<object>(this.apikey, 'delete', 'template/props-remove', {
+    return request.core<Record<string, unknown>>(this.apikey, 'delete', 'template/props-remove', {
       templateId,
       props,
     })

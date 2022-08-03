@@ -1,6 +1,9 @@
 import anyTest, { TestFn } from 'ava'
+import { AxiosError } from 'axios'
 import _ from 'lodash'
+
 import * as config from './config'
+
 import { Game } from './index'
 
 const test = anyTest as TestFn<{
@@ -20,9 +23,9 @@ test('reates a game object', (t) => {
 })
 
 test('the server status can be retrieved', async (t) => {
-  const result = await t.context.game.health.check()
-    .catch((err) => err.response.data)
-  t.deepEqual(result.data || result, {
+  const result = await t.context.noopGame.health.check()
+    .catch((err: AxiosError<string>) => err.response)
+  t.deepEqual(result?.data, {
     status: 'OK',
   })
 })

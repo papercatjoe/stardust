@@ -1,5 +1,4 @@
 import * as urlJoin from 'url-join'
-import * as querystring from 'querystring'
 import * as axios from 'axios'
 import _ from 'lodash'
 
@@ -32,13 +31,12 @@ export const methodBasedDefaultHeaders: Record<Method, Record<string, string>> =
   put: postHeaders,
 }
 
-export const paramsSerializer = (params: Record<string, any>) => {
-  return _(params).keys().map((key) => (
-    [key, _.isObject(params[key])
-      ? encodeURIComponent(JSON.stringify(params[key]))
-      : params[key]].join('=')
-  )).value().join('&')
-}
+export const paramsSerializer = (params: Record<string, any>) => _(params).keys().map((key) => (
+  [key, _.isObject(params[key])
+    ? encodeURIComponent(JSON.stringify(params[key]))
+    : params[key]].join('=')
+)).value()
+  .join('&')
 
 export const request = <T>(
   apikey: string | undefined,
@@ -53,7 +51,7 @@ export const request = <T>(
     ...options,
     headers: {
       ...(apikey ? {
-        'x-api-key': apikey as string,
+        'x-api-key': apikey,
       } : {}),
       ...methodDefaultHeaders,
       ...(options?.headers || {}),

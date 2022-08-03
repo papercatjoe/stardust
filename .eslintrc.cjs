@@ -103,6 +103,7 @@ module.exports = {
       '@typescript-eslint/unbound-method': ['error', {
         'ignoreStatic': true,
       }],
+      "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
     },
   }],
 };

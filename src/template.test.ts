@@ -1,10 +1,12 @@
 import anyTest, { TestFn } from 'ava'
 import * as uuid from 'uuid'
-import { Game } from './'
-import * as config from './config'
 import _ from 'lodash'
+
+import * as config from './config'
 import * as utils from './utils'
 import * as testUtils from './tst-utils'
+
+import { Game } from '.'
 
 const test = anyTest as TestFn<{
   noopGame: Game;
@@ -44,16 +46,16 @@ test('can get template', async (t) => {
     name,
     type: 'FT',
     props: {
-      mutable: {
+      'mutable': {
         image: utils.placeholderImage,
       },
       '$mutable': {},
-      immutable: {}
+      'immutable': {},
     },
     id: template.id,
     totalSupply: '0',
     royalty: 0,
-    fees: [ { feePercentage: 0, feeType: 'game_royalty' } ],
+    fees: [{ feePercentage: 0, feeType: 'game_royalty' }],
     image: t.context.game.template.image(gameId, template.id),
   })
 })
@@ -62,11 +64,11 @@ test('can get all templates', async (t) => {
   t.timeout(10_000)
   const name1 = uuid.v4()
   const name2 = uuid.v4()
-  const { data: { id: id1 } } = await t.context.game.template.create({
+  await t.context.game.template.create({
     name: name1,
     cap: '1000',
   })
-  const { data: { id: id2 } } = await t.context.game.template.create({
+  await t.context.game.template.create({
     name: name2,
     cap: '1000',
   })
@@ -80,7 +82,7 @@ test.serial('can get counts of templates', async (t) => {
   const name1 = uuid.v4()
   const { data: countBefore } = await t.context.game.template.count()
   t.is(countBefore.count - testUtils.ignorableTemplates.size, 0)
-  const { data: { id: id1 } } = await t.context.game.template.create({
+  await t.context.game.template.create({
     name: name1,
     cap: '1000',
   })
@@ -155,11 +157,11 @@ test('can get with a filter', async (t) => {
     name: name2,
     type: 'FT',
     props: {
-      mutable: {
+      'mutable': {
         image: utils.placeholderImage,
       },
       '$mutable': {},
-      immutable: {}
+      'immutable': {},
     },
     id: id2,
     totalSupply: '0',

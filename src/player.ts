@@ -98,26 +98,29 @@ export class Player {
       playerId,
     })
   }
-  async create(uniqueId: string, userData = {}, image?: string) {
-    return request.core<CreatePlayerResponse>(this.apikey, 'post', 'player/create', {
+  async create(uniqueId: string, userData = {}, image = '') {
+    return request.core<CreatePlayerResponse>(this.apikey, 'post', 'player/create', image ? {
       uniqueId,
       userData,
       image,
+    } : {
+      uniqueId,
+      userData,
     })
   }
   async update(playerId: string, props: AnyRecord) {
-    return request.core<object>(this.apikey, 'put', 'player/mutate', {
+    return request.core<Record<string, unknown>>(this.apikey, 'put', 'player/mutate', {
       playerId,
       props,
     })
   }
   async remove(playerId: string) {
-    return request.core<object>(this.apikey, 'delete', 'player/remove', {
+    return request.core<Record<string, unknown>>(this.apikey, 'delete', 'player/remove', {
       playerId,
     })
   }
   async removeProps(playerId: string, props: string[]) {
-    return request.core<object>(this.apikey, 'delete', 'player/props-remove', {
+    return request.core<Record<string, unknown>>(this.apikey, 'delete', 'player/props-remove', {
       playerId,
       props,
     })
