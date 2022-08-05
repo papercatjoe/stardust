@@ -7,6 +7,16 @@ npm i stardust.gg
 yarn add stardust.gg
 ```
 
+## Stardust dashboard setup
+
+To hit the stardust api directly a few items must be completed.
+- login to stardust
+- create a game (preferrably an isolated one - called test) on polygon
+- create an api key
+- copy the api key into your `.env` file under `STARDUST_APIKEY`
+- create a template called test
+- copy the template id into your `.env` file under `TEMPLATE_ID`
+
 ## Create a game
 
 ```ts

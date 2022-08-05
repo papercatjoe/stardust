@@ -151,7 +151,12 @@ test('can get wallet', async (t) => {
   } = await t.context.game.player.create(uniquePlayerId())
   const { data } = await t.context.game.player.getWallet(data1.playerId)
   const { wallet: [wallet] } = data
-  t.is(wallet.blockchain, 'immutablex')
-  t.assert(ethers.utils.getAddress(wallet.address))
-  t.deepEqual(wallet.balances, baselineBalances())
+  t.assert(_.isString(ethers.utils.getAddress(wallet.address)))
+  if (wallet.blockchain === 'polygon') {
+    t.deepEqual(wallet.balances, [])
+  } else if (wallet.blockchain === 'immutablex') {
+    t.deepEqual(wallet.balances, baselineBalances())
+  } else {
+    throw new Error('blockchain not supported by tests')
+  }
 })
