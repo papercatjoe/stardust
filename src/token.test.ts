@@ -137,12 +137,17 @@ test.serial('can withdraw', async (t) => {
     templateId: config.template.id,
     amount,
   })
+  const { data: inventory } = await t.context.game.player.getInventory(player1.playerId)
+  t.deepEqual(inventory, [{
+    tokenId: tokens1[0],
+    amount,
+  }])
   const randomWallet = ethers.Wallet.createRandom()
   const publicAddress = await randomWallet.getAddress()
   await Promise.all(tokens1.map(async (token) => {
     await t.context.game.player.withdraw(player1.playerId, publicAddress, {
       tokenId: token,
-      amount,
+      amount: '100',
     })
   }))
   const balances = await t.context.game.token.get(tokens1)
