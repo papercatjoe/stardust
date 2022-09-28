@@ -6,6 +6,7 @@ export const ignorableTemplates = new Set<number>([
   // temporary work around for ignoring templates
   11911,
   11912,
+  12266,
   // need this template id for tests
   config.template.id,
 ])
