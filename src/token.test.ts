@@ -4,7 +4,7 @@ import _ from 'lodash'
 import { AxiosError, AxiosResponse } from 'axios'
 
 import * as config from './config'
-import { uniquePlayerId } from './utils'
+import { uniquePlayerId, placeholderImage } from './utils'
 import * as testUtils from './tst-utils'
 
 import { Game } from '.'
@@ -62,7 +62,7 @@ test('efficient coverage', async (t) => {
     props: {
       inherited: {
         description: '',
-        image: `templates/${config.template.id}`,
+        image: placeholderImage, // `templates/${config.template.id}`,
       },
       immutable: {},
       mutable: {},
@@ -80,7 +80,7 @@ test('efficient coverage', async (t) => {
     props: {
       inherited: {
         description: '',
-        image: `templates/${config.template.id}`,
+        image: placeholderImage, // `templates/${config.template.id}`,
       },
       immutable: {},
       mutable: {
@@ -98,7 +98,7 @@ test('efficient coverage', async (t) => {
     props: {
       inherited: {
         description: '',
-        image: `templates/${config.template.id}`,
+        image: placeholderImage, // `templates/${config.template.id}`,
       },
       immutable: {},
       mutable: {

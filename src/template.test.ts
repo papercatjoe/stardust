@@ -82,13 +82,13 @@ test.serial('can get counts of templates', async (t) => {
   t.timeout(10_000)
   const name1 = uuid.v4()
   const { data: countBefore } = await t.context.game.template.count()
-  t.is(countBefore.count + (config.template.id ? 0 : 1), 1)
+  t.is(countBefore.count + (config.template.id ? 0 : 1), 2)
   await t.context.game.template.create({
     name: name1,
     cap: '1000',
   })
   const { data: countAfter } = await t.context.game.template.count()
-  t.is(countAfter.count + (config.template.id ? 0 : 1), 2)
+  t.is(countAfter.count + (config.template.id ? 0 : 1), 3)
 })
 
 test('can update templates', async (t) => {
