@@ -139,17 +139,13 @@ test.serial('can withdraw', async (t) => {
   })
   const randomWallet = ethers.Wallet.createRandom()
   const publicAddress = await randomWallet.getAddress()
-  let threw = false
-  try {
-    await Promise.all(tokens1.map(async (token) => {
-      await t.context.game.player.withdraw(player1.playerId, publicAddress, {
-        tokenId: token,
-        amount,
-      })
-    }))
-  } catch (err) {
-    console.log(err)
-    threw = true
-  }
-  t.assert(threw)
+  await Promise.all(tokens1.map(async (token) => {
+    await t.context.game.player.withdraw(player1.playerId, publicAddress, {
+      tokenId: token,
+      amount,
+    })
+  }))
+  const balances = await t.context.game.token.get(tokens1)
+  console.log(balances)
+  t.assert(balances)
 })
