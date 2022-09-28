@@ -1,10 +1,10 @@
-# Stardust.gg
+# Stardust-gg
 
 interact with the stardust api over http using your favorite language - javascript! (typescript too!)
 
 ```bash
-npm i stardust.gg
-yarn add stardust.gg
+npm i stardust-gg
+yarn add stardust-gg
 ```
 
 ## Stardust dashboard setup
@@ -21,7 +21,7 @@ To hit the stardust api directly a few items must be completed.
 
 ```ts
 // game.ts
-import * as stardust from 'stardust.gg'
+import * as stardust from 'stardust-gg'
 export const game = new stardust.Game('API_KEY_HERE')
 ```
 
