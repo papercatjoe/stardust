@@ -9,7 +9,7 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
     "prepack": "npm run build",
-    "test": "c8 ava"
+    "test": "npm run build && c8 ava"
   },
   "files": [
     "dist"
@@ -62,12 +62,6 @@
     "verbose": true,
     "failWithoutAssertions": true,
     "utilizeParallelBuilds": false,
-    "extensions": {
-      "ts": "module"
-    },
-    "nodeArguments": [
-      "--loader=ts-node/esm",
-      "--experimental-specifier-resolution=node"
-    ]
+    "files": ["dist/*.test.js"]
   }
 }
