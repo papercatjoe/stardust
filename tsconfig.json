@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["ES6"],
-    "module": "ES2020",
+    "target": "ES5",
+    "lib": ["ES5"],
+    "module": "CommonJS",
     "strict": true,
     "declaration": true,
     "esModuleInterop": true,
