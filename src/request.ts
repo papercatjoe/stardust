@@ -1,4 +1,3 @@
-import * as urlJoin from 'url-join'
 import * as axios from 'axios'
 import _ from 'lodash'
 
@@ -29,6 +28,12 @@ export const methodBasedDefaultHeaders: Record<Method, Record<string, string>> =
   post: postHeaders,
   delete: getHeaders,
   put: postHeaders,
+}
+
+const urlJoin = (...part: string[]) => {
+  return part.reduce((part, appendable) => {
+    return part + (appendable.startsWith('/') ? appendable.slice(1) : appendable)
+  })
 }
 
 export const paramsSerializer = (params: Record<string, any>) => _(params).keys().map((key) => (
@@ -72,7 +77,7 @@ export const core = <T>(
   request<T>(
     apikey,
     method,
-    urlJoin.default('https://core-api.stardust.gg/v1/', uri),
+    urlJoin('https://core-api.stardust.gg/v1/', uri),
     body,
     options,
   )
@@ -88,7 +93,7 @@ export const marketplace = <T>(
   request<T>(
     apikey,
     method,
-    urlJoin.default('https://marketplace-api.stardust.gg/v1/', uri),
+    urlJoin('https://marketplace-api.stardust.gg/v1/', uri),
     body,
     options,
   )
