@@ -22,9 +22,9 @@ test.before((t) => {
 })
 
 test.after.always(async (t) => {
-  // await testUtils.deleteAll.tokens(t.context.game)
-  // await testUtils.deleteAll.players(t.context.game)
-  // await testUtils.deleteAll.templates(t.context.game)
+  await testUtils.deleteAll.tokens(t.context.game)
+  await testUtils.deleteAll.players(t.context.game)
+  await testUtils.deleteAll.templates(t.context.game)
 })
 
 test('efficient coverage', async (t) => {
