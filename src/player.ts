@@ -4,6 +4,7 @@ import * as ethers from 'ethers'
 import * as utils from './utils'
 import * as request from './request'
 import type { AnyRecord, Count } from './type'
+import { AxiosError } from 'axios'
 
 export type PlayerIdResponse = {
   playerId: string;
@@ -135,5 +136,14 @@ export class Player {
       address: ethers.utils.getAddress(address),
       tokenObjects: utils.toArray(tokens),
     })
+  }
+  withdrawalFailure(err: AxiosError) {
+    const data = err.response?.data as {
+      message: string;
+      statusCode: number;
+    }
+    return data.message.startsWith('cannot estimate gas')
+      && data.message.includes('UNPREDICTABLE_GAS_LIMIT')
+      && data.statusCode === 500
   }
 }

@@ -4,7 +4,7 @@ import _ from 'lodash'
 import { AxiosError, AxiosResponse } from 'axios'
 
 import * as config from './config'
-import { uniquePlayerId, placeholderImage } from './utils'
+import { uniquePlayerId, placeholderImage, timeout } from './utils'
 import * as testUtils from './tst-utils'
 
 import { Game } from '.'
@@ -128,7 +128,7 @@ test('efficient coverage', async (t) => {
   })
 })
 
-test.serial.only('can withdraw', async (t) => {
+test.serial('can withdraw', async (t) => {
   t.timeout(20_000)
   const { data: player1 } = await t.context.game.player.create(uniquePlayerId())
 
@@ -148,6 +148,11 @@ test.serial.only('can withdraw', async (t) => {
     await t.context.game.player.withdraw(player1.playerId, publicAddress, {
       tokenId: token,
       amount: '100',
+    }).catch((err: AxiosError) => {
+      if (t.context.game.player.withdrawalFailure(err)) {
+        console.log('failure recognized as withdrawal failure')
+      }
+      throw err
     })
   }))
   const balances = await t.context.game.token.get(tokens1)
