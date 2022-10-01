@@ -65,6 +65,8 @@ export type UpdatePlayerRequest = {
   props: AnyRecord;
 }
 
+const timelyWithdrawal = new Error('unable to complete withdrawal in timely manner')
+
 export class Player {
   constructor(protected apikey: string) {}
   get(playerId: string) {
@@ -136,6 +138,28 @@ export class Player {
       address: ethers.utils.getAddress(address),
       tokenObjects: utils.toArray(tokens),
     })
+  }
+  async retryIteration<T>(
+    fn: () => Promise<T>,
+    shouldRetry: (err: AxiosError) => boolean,
+    timeout = 10_000,
+    maxIteration = 60,
+  ): Promise<T> {
+    let iteration = maxIteration
+    while (iteration--) {
+      const response = await fn().catch((err: AxiosError) => {
+        if (shouldRetry(err)) {
+          return null
+        }
+        throw err
+      })
+      if (response) {
+        return response
+      }
+      await utils.timeout(timeout)
+      console.log('retry iteration', maxIteration - iteration)
+    }
+    throw timelyWithdrawal
   }
   withdrawalFailure(err: AxiosError) {
     const data = err.response?.data as {

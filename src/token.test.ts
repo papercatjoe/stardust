@@ -4,7 +4,7 @@ import _ from 'lodash'
 import { AxiosError, AxiosResponse } from 'axios'
 
 import * as config from './config'
-import { uniquePlayerId, placeholderImage, timeout } from './utils'
+import { uniquePlayerId, placeholderImage } from './utils'
 import * as testUtils from './tst-utils'
 
 import { Game } from '.'
@@ -129,7 +129,7 @@ test('efficient coverage', async (t) => {
 })
 
 test.serial('can withdraw', async (t) => {
-  t.timeout(20_000)
+  t.timeout(60_000)
   const { data: player1 } = await t.context.game.player.create(uniquePlayerId())
 
   const amount = '1000'
@@ -144,18 +144,17 @@ test.serial('can withdraw', async (t) => {
   }])
   const randomWallet = ethers.Wallet.createRandom()
   const publicAddress = await randomWallet.getAddress()
+  const { data: token } = await t.context.game.token.get(tokens1)
   await Promise.all(tokens1.map(async (token) => {
-    await t.context.game.player.withdraw(player1.playerId, publicAddress, {
-      tokenId: token,
-      amount: '100',
-    }).catch((err: AxiosError) => {
-      if (t.context.game.player.withdrawalFailure(err)) {
-        console.log('failure recognized as withdrawal failure')
-      }
-      throw err
-    })
+    await t.context.game.player.retryIteration(
+      () => t.context.game.player.withdraw(player1.playerId, publicAddress, {
+        tokenId: token,
+        amount: '100',
+      }),
+      (err) => t.context.game.player.withdrawalFailure(err),
+      5_000,
+    )
   }))
-  const balances = await t.context.game.token.get(tokens1)
-  console.log(balances)
-  t.assert(balances)
+  const { data: balances } = await t.context.game.token.get(tokens1)
+  t.deepEqual(balances, token)
 })
