@@ -148,10 +148,13 @@ test.serial('can withdraw', async (t) => {
   const { data: token } = await t.context.game.token.get(tokens1)
   await Promise.all(tokens1.map(async (token) => {
     await t.context.game.player.retryIteration(
-      () => t.context.game.player.withdraw(player1.playerId, publicAddress, {
-        tokenId: token,
-        amount: '1000',
-      }),
+      async (iteration: number) => {
+        console.log('retry iteration', iteration)
+        return await t.context.game.player.withdraw(player1.playerId, publicAddress, {
+          tokenId: token,
+          amount: '1000',
+        })
+      },
       (err) => t.context.game.player.withdrawalFailure(err),
       5_000,
     )

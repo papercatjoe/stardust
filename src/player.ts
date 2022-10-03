@@ -140,14 +140,14 @@ export class Player {
     })
   }
   async retryIteration<T>(
-    fn: () => Promise<T>,
+    fn: (n: number) => Promise<T>,
     shouldRetry: (err: AxiosError) => boolean,
     timeout = 10_000,
     maxIteration = 60,
   ): Promise<T> {
     let iteration = maxIteration
     while (iteration--) {
-      const response = await fn().catch((err: AxiosError) => {
+      const response = await fn(maxIteration - iteration).catch((err: AxiosError) => {
         if (shouldRetry(err)) {
           return null
         }
@@ -157,7 +157,6 @@ export class Player {
         return response
       }
       await utils.timeout(timeout)
-      console.log('retry iteration', maxIteration - iteration)
     }
     throw timelyWithdrawal
   }
