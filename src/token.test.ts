@@ -144,12 +144,13 @@ test.serial('can withdraw', async (t) => {
   }])
   const randomWallet = ethers.Wallet.createRandom()
   const publicAddress = await randomWallet.getAddress()
+  console.log(publicAddress, inventory)
   const { data: token } = await t.context.game.token.get(tokens1)
   await Promise.all(tokens1.map(async (token) => {
     await t.context.game.player.retryIteration(
       () => t.context.game.player.withdraw(player1.playerId, publicAddress, {
         tokenId: token,
-        amount: '100',
+        amount: '1000',
       }),
       (err) => t.context.game.player.withdrawalFailure(err),
       5_000,
