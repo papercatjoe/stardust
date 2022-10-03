@@ -5,6 +5,15 @@ import type { GameInstance } from './type'
 import * as request from './request'
 import * as health from './health'
 
+export * from './config'
+export * from './health'
+export * from './player'
+export * from './request'
+export * from './template'
+export * from './token'
+export * from './type'
+export * from './utils'
+
 export class Game {
   template: Template
   player: Player
