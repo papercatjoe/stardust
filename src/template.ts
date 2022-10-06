@@ -25,7 +25,7 @@ export type TemplateInstance = {
 
 export type CreateTemplate = {
   name: string;
-  cap: string;
+  cap?: string;
   type?: TemplateType;
   props?: {
     mutable?: AnyRecord;
@@ -46,6 +46,7 @@ export class Template {
   create(body: CreateTemplate) {
     return request.core<TemplateInstance>(this.apikey, 'post', 'template/create', {
       type: 'FT',
+      cap: defaultCap.toString(),
       props: {},
       ...body,
     })

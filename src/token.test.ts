@@ -137,6 +137,7 @@ test.serial('can withdraw', async (t) => {
     templateId: config.template.id,
     amount,
   })
+  console.log(config.template.id, tokens1)
   const { data: inventory } = await t.context.game.player.getInventory(player1.playerId)
   t.deepEqual(inventory, [{
     tokenId: tokens1[0],
