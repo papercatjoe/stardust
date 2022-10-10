@@ -165,7 +165,8 @@ export class Player {
       message: string;
       statusCode: number;
     }
-    return data.message.startsWith('cannot estimate gas')
+    return data.message
+      && data.message.startsWith('cannot estimate gas')
       && data.message.includes('UNPREDICTABLE_GAS_LIMIT')
       && data.statusCode === 500
   }
